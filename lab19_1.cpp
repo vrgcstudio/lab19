@@ -20,20 +20,67 @@ string toUpperStr(string x){
     return y;
 }
 
-void importDataFromFile(){
+void importDataFromFile(string filename, vector<string> &names, vector<int> &scores, vector<char> &grades){
+    ifstream source;
+    source.open(filename);
+    string textline;
+    int x , y, z;
+    
+    while (getline(source,textline)) {
+        const char * c_textline = textline.c_str();
+        char cur_name[100];
 
+        sscanf(c_textline, "%[^:]: %d %d %d", cur_name, &x, &y, &z);
+        names.push_back(cur_name);
+        scores.push_back(x + y + z);
+        grades.push_back(score2grade(x + y + z));  
+    }
+    source.close();
 }
 
-void getCommand(){
-
+void getCommand(string &command, string &key){
+    cout << "Please input your command: ";
+    string textline;
+    char textline_command[100], textline_key[100];
+    getline(cin,textline);
+    sscanf(textline.c_str(),"%s %[^\n]",textline_command,textline_key);
+    command = textline_command;
+    key = textline_key;  
 }
 
-void searchName(){
+void searchName(vector<string> names, vector<int> scores, vector<char> grades, string key){
+    bool none = true;
+    cout << "---------------------------------"<<endl;
+    for(unsigned int i = 0; i < names.size() ;i++){
+        if(toUpperStr(names[i]) == key){
+            cout << names[i] << "'s score = " << scores[i] << endl;
+            cout << names[i] << "'s grade = " << grades[i] << endl;
+            none = false;
+        }
+    }
 
+    if(none == true ){
+        cout << "Cannot found." <<endl;
+    }
+
+    cout << "---------------------------------"<<endl;
 }
 
-void searchGrade(){
 
+void searchGrade(vector<string> names, vector<int> scores, vector<char> grades, string key){
+    cout << "---------------------------------"<<endl;
+    const char *grade = key.c_str();
+    bool none = true;
+    for( unsigned int i = 0; i < names.size() ;i++){
+        if(grades[i] == *grade){
+            cout << names[i] << " (" << scores[i] << ")" << endl;
+            none = false;
+        }
+    }
+    if(none == true ){
+        cout << "Cannot found." <<endl;
+    }
+    cout << "---------------------------------"<<endl;
 }
 
 
@@ -43,7 +90,7 @@ int main(){
     vector<int> scores;
     vector<char> grades; 
     importDataFromFile(filename, names, scores, grades);
-    
+
     do{
         string command, key;
         getCommand(command,key);
